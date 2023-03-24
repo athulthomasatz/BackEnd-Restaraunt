@@ -1,0 +1,35 @@
+user cart
+{{>user-header}}
+
+
+{{!--  --}}
+<div class="container mt-5">
+  <h2>Your Cart</h2>
+
+  {{#if cart.items.length}}
+    <table class="table">
+      <thead>
+        <tr>
+    
+          <th>Product Name</th>
+          <th>Quantity</th>
+          <th>Price</th>
+          <th>orderer price</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each cart.items}}
+          <tr>
+            <td>{{product.name}}</td>
+            <td>{{quantity}}</td>
+            <td>{{product.price}}</td>
+            <td>{{this.totalPrice}}</td>
+          </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  {{else}}
+    <p>Your cart is empty.</p>
+  {{/if}}
+{{grandTotal}}
+</div>

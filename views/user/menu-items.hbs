@@ -1,0 +1,51 @@
+
+{{>user-header}}
+<div class="container mt-5 ">
+    <h2>All Items in {{category.name}}</h2>
+    {{categoryName}}
+    {{#each items}}
+    <div class="card" style="width: 18rem;">
+        <img src="/uploads/{{this.imageUrl}}" width="200" height="100" alt="Food Categories">
+        <div class="card-body">
+
+            <h5 class="card-title">{{this.name}}</h5>
+            <p class="card-text">{{this.description}}
+                {{this._id}}
+            </p>
+        
+            <form method="post" action="/user/cart">
+                <div class="input-group mb-3">
+                    <button class="btn btn-outline-secondary" type="button" onclick="decrementValue('{{this._id}}')">-</button>
+                    <input type="number" name="quantity" id="quantity_{{this._id}}" class="form-control"  value="{{this.quantity}}">
+                    
+                    <button class="btn btn-outline-secondary" type="button" onclick="incrementValue('{{this._id}}')">+</button>
+                </div>
+                <input type="hidden" name="itemId" value="{{this._id}}">
+                <button type="submit" class="btn btn-primary">Update Cart</button>
+            </form>
+
+            
+
+        </div>
+    </div>
+    {{/each}}
+    {{this.quantity}}
+</div>
+<script>
+    function incrementValue(itemId) {
+        var quantity = parseInt(document.getElementById("quantity_" + itemId).value, 10);
+        quantity = isNaN(quantity) ? 0 : quantity;
+        quantity++;
+        document.getElementById("quantity_" + itemId).value = quantity;
+    }
+
+    function decrementValue(itemId) {
+        var quantity = parseInt(document.getElementById("quantity_" + itemId).value, 10);
+        quantity = isNaN(quantity) ? 0 : quantity;
+        if (quantity > 0) {
+            quantity--;
+        }
+        document.getElementById("quantity_" + itemId).value = quantity;
+    }
+</script>
+

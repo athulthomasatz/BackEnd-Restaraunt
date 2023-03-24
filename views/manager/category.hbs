@@ -1,0 +1,16 @@
+{{>manager-header}}
+
+<div class="container mt-5 ">
+{{#each categories}}
+<a href="/manager/category/{{this.name}}" class="text-decoration-none link-dark">
+<div class="card">
+            <img src="/uploads/{{this.imageUrl}}" width="200" height="100" alt="Food Categories">
+            <div class="card-body">
+                <h5 class="card-title">{{this.name}}</h5>
+                <p class="card-text">{{this.description}}
+                </p>
+            </div>
+        </div>
+        </a>
+{{/each}}
+</div>
