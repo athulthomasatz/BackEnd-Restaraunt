@@ -9,10 +9,9 @@
         <div class="card-body">
 
             <h5 class="card-title">{{this.name}}</h5>
-            <p class="card-text">{{this.description}}
-                {{this._id}}
-            </p>
-        
+            {{this.price}}
+            <h6 class="card-title">Appx Time : {{this.apprtime}}</h6>
+            
             <form method="post" action="/user/cart">
                 <div class="input-group mb-3">
                     <button class="btn btn-outline-secondary" type="button" onclick="decrementValue('{{this._id}}')">-</button>
@@ -23,9 +22,6 @@
                 <input type="hidden" name="itemId" value="{{this._id}}">
                 <button type="submit" class="btn btn-primary">Update Cart</button>
             </form>
-
-            
-
         </div>
     </div>
     {{/each}}

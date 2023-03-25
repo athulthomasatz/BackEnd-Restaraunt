@@ -18,20 +18,26 @@
       </thead>
       <tbody>
         {{#each orders}}
-        {{totalAmount}}
+          
+  Total : <b>{{totalAmount}}</b>
           {{#each this.items}}
             <tr>
               <td>{{product.name}}</td> 
               <td>{{quantity}}</td>
-              <td>{{product.price}}</td>   
-              {{!-- <td>{{totalAmount}}</td> --}}
+              <td>{{product.price}}</td> 
+                            
+              <td>{{totalPrice}}</td>
+              
+              <td>Thenga***</td>
               <td>{{../paymentStatus}}</td>
               <td>{{../orderStatus}}</td>
             </tr>
-          {{/each}}
+            
         {{/each}}
+          {{/each}}
       </tbody>
     </table>
+    
   {{else}}
     <p>You haven't ordered any items yet.</p>
   {{/if}}

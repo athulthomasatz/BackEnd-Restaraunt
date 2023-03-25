@@ -196,7 +196,7 @@ exports.getUserCartPage = async (req, res) => {
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Server Error' });
-    }
+    }       
 };
 
 exports.getOrderPage = async(req, res) => {
@@ -205,7 +205,7 @@ exports.getOrderPage = async(req, res) => {
         const userId = req.session.useId.id;
         
         // Find all orders for the user and populate the product information
-        const orders = await Order.find({ user: userId }).populate('items.product').lean();
+        const orders = await Order.find({ user: userId }).populate('items.product').lean()
         
         // Render the ordered items view and pass in the orders data
         res.render('user/order', { orders }); 
@@ -235,7 +235,8 @@ exports.getOrderPage = async(req, res) => {
           const orderItems = cart.items.map(item => ({
             product: item.product._id,
             quantity: item.quantity,
-            price: item.product.price
+            price: item.product.price,
+            totalPrice : item.quantity * item.product.price
           }));
       
           const order = new Order({

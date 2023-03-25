@@ -166,6 +166,7 @@ exports.getAddCategoryPage = (req, res) => {
       imageUrl : uploadUrl,
       name: req.body.itemname,
       price: req.body.itemprice,
+      apprtime:req.body.apprtime,
       description : req.body.itemdescription,
       category: req.body.category 
     })
