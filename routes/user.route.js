@@ -13,7 +13,11 @@ router.get('/menu', verifyAuth, userController.getUserMenuPage)
 router.get('/menu/:categoryName', verifyAuth, userController.getUserMenuItemPage) 
 
 router.post('/cart', verifyAuth, userController.addToCart);
-router.get('/cart-view',verifyAuth,userController.getUserCartPage) 
+router.get('/cart-view',verifyAuth,userController.getUserCartPage)   
+
+router.get('/order',verifyAuth,userController.getOrderPage)
+router.post('/place-order', verifyAuth, userController.placeOrder);
+
 
 router.get('/logout',verifyAuth,userController.userLogout)
 

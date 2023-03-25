@@ -1,0 +1,39 @@
+{{>user-header}}
+
+<div class="container mt-5">
+  <h2>Ordered Items</h2>
+
+  {{#if orders.length}}
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Product Name</th>
+          <th>Quantity</th>
+          <th>Price</th>
+          <th>Total Price</th>
+          <th>Payment Method</th>
+          <th>Payment Status</th>
+          <th>Order Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each orders}}
+        {{totalAmount}}
+          {{#each this.items}}
+            <tr>
+              <td>{{product.name}}</td> 
+              <td>{{quantity}}</td>
+              <td>{{product.price}}</td>   
+              {{!-- <td>{{totalAmount}}</td> --}}
+              <td>{{../paymentStatus}}</td>
+              <td>{{../orderStatus}}</td>
+            </tr>
+          {{/each}}
+        {{/each}}
+      </tbody>
+    </table>
+  {{else}}
+    <p>You haven't ordered any items yet.</p>
+  {{/if}}
+</div>
+

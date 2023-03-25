@@ -1,4 +1,5 @@
 const express = require('express')
+const helpers = require('./helpers/helpers');
 const path = require('path')
 const bodyParser = require('body-parser');
 const methodOverride = require('method-override');
@@ -46,6 +47,10 @@ app.use(methodOverride('_method'));
 app.use(bodyParser.urlencoded({ extended: true }));
 
 //engine set up
+const hbs = require('hbs');
+
+hbs.registerHelper('calculateTotalPrice', helpers.calculateTotalPrice);
+
 app.use(express.urlencoded({extended:true}))
 app.engine('hbs', engine({
     extname:'hbs',

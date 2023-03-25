@@ -2,11 +2,13 @@ const Category = require('../models/Category')
 const Item = require('../models/Item')
 const usersData = require('../models/UserData')
 const Cart = require('../models/CartUser')
+const Order = require('../models/UserOrder')
 const bcrypt = require('bcryptjs');
 const saltRounds = 10;
 const sessions = require('express-session');
 const session = require('express-session');
 const UserData = require('../models/UserData');
+
 exports.getUserPage = (req, res) => {
     res.send("User Page")
 }
@@ -94,12 +96,13 @@ exports.postUserSignupPage = async (req, res) => {
 exports.getUserMenuPage = async (req, res) => {
     try {
         const userName = req.session.useId.name;
-        console.log(userName + "usernamw");
+        console.log(userName + "username in menu page found");
         // Retrieve all the categories
         const categories = await Category.find({}).lean();
 
         // Render the menu page with the categories
         res.render('user/menu', { categories, userName });
+        console.log(categories);
     } catch (err) {
         console.error(err);
         res.status(500).send('Server Error');
@@ -113,20 +116,18 @@ exports.getUserMenuItemPage = async (req, res) => {
 
         // Retrieve the category with the given name
         const category = await Category.findOne({ name: categoryName }).lean();
-        console.log(category);
-
-        // Retrieve all the items that belong to that category
-        const items = await Item.find({ category: category._id }).lean(); 
-        console.log(items)
         
+        // Retrieve all the items that belong to that category
+        const items = await Item.find({ category: category._id }).lean();
+        
+
         // Loop through the items and add the quantity property to each item object
         for (let i = 0; i < items.length; i++) {
             const cartItem = await Cart.findOne({ user: req.session.useId.id, item: items[i]._id });
-            console.log(cartItem + "deeebuuug");
             if (cartItem) {
                 items[i].quantity = cartItem.quantity;
-                console.log(cartItem.quantity + "why this is undefined");
-                
+                console.log(cartItem.quantity );
+
             } else {
                 items[i].quantity = 0;
             }
@@ -134,25 +135,25 @@ exports.getUserMenuItemPage = async (req, res) => {
 
 
         // Render the category page with the items
-        res.render('user/menu-items', { category, items }); 
+        res.render('user/menu-items', { category, items });
     } catch (err) {
         console.error(err);
         res.status(500).send('Server Error');
     }
 }
 exports.addToCart = async (req, res) => {
-    try{
+    try {
         const userId = req.session.useId.id;
-        console.log(userId + " user id found"); 
-        let userCart = await Cart.findOne({user : userId });
-        if(!userCart){
+        console.log(userId + " user id found");
+        let userCart = await Cart.findOne({ user: userId });
+        if (!userCart) {
             userCart = await new Cart({
-                user : userId 
+                user: userId
             }).save()
             console.log("new cart created for user!!!:)", userId);
         }
         const { itemId, quantity } = req.body;
-        console.log(itemId + " item found and no :" + quantity );
+        console.log(itemId + " item found and no :" + quantity);
         const existingItem = userCart.items.find(item => item.product.toString() === itemId);
         if (existingItem) {
             existingItem.quantity += parseInt(quantity);
@@ -164,39 +165,105 @@ exports.addToCart = async (req, res) => {
         }
         // Save cart to database
         await userCart.save();
-        res.redirect('/user/menu');
+        res.redirect('/user/menu/');
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Server Error' });
     }
-    }
-exports.getUserCartPage = async(req,res)=>{
+}
+exports.getUserCartPage = async (req, res) => {
     const fetchuser = await UserData.findById(req.session.useId.id);
-    console.log(fetchuser + " user found");
+    console.log(fetchuser + " user found fethced");
     // Define a new route to display the user's cart items
     try {
-      // Find  user's cart and populate the items array with the corresponding product documents
-      const cart = await Cart.findOne({ user: req.session.useId.id }).populate('items.product').lean();
-        console.log(cart);
+        // Find  user's cart and populate the items array with the corresponding product documents
+        const cart = await Cart.findOne({ user: req.session.useId.id }).populate('items.product').lean();
+        
         if (!cart) {
             return res.render('user/cart', { cart: null, grandTotal: 0 });
-          }
+        }
 
-      // Calculate the total price for each cart item
-    cart.items.forEach(item => {
-        item.totalPrice = item.product.price * item.quantity;
-      });
-      
-  
-      // Calculate the grand total of all cart items
-      const grandTotal = cart.items.reduce((total, item) => total + item.totalPrice, 0);
-      console.log(grandTotal);
-      res.render('user/cart', { cart, grandTotal });
+        // Calculate the total price for each cart item
+        cart.items.forEach(item => {
+            item.totalPrice = item.product.price * item.quantity;
+        });
+
+
+        // Calculate the grand total of all cart items
+        const grandTotal = cart.items.reduce((total, item) => total + item.totalPrice, 0);
+        console.log(grandTotal + "grandfdf");
+        res.render('user/cart', { cart, grandTotal });
     } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: 'Server Error' });
+        console.error(error);
+        res.status(500).json({ error: 'Server Error' });
     }
-  };
+};
+
+exports.getOrderPage = async(req, res) => {
+    try {
+        // Get the user ID from the authenticated session
+        const userId = req.session.useId.id;
+        
+        // Find all orders for the user and populate the product information
+        const orders = await Order.find({ user: userId }).populate('items.product').lean();
+        
+        // Render the ordered items view and pass in the orders data
+        res.render('user/order', { orders }); 
+      } catch (err) {
+        console.error(err);
+        res.render('error', { message: 'Error getting ordered items' });
+      }
+
+    
+
+}
+
+
+ exports.placeOrder = async (req, res) => {
+        try {
+          // Get the user ID from the authenticated session 
+          const userId = req.session.useId.id;
+          console.log(userId +"place order userid");
+      
+          // Get the cart items for the user
+          const cart = await Cart.findOne({ user: userId }).populate('items.product');
+          if (!cart || cart.items.length === 0) {
+            return res.status(400).json({ error: 'Your cart is empty. Please add items before placing an order.' });
+          }
+      
+          // Create an order
+          const orderItems = cart.items.map(item => ({
+            product: item.product._id,
+            quantity: item.quantity,
+            price: item.product.price
+          }));
+      
+          const order = new Order({
+            user: userId,
+            items: orderItems,
+            totalAmount: cart.grandTotal,
+            paymentMethod: req.body.paymentMethod,
+            paymentStatus: 'pending',
+            orderStatus: 'pending'
+          });
+      
+          // Save the order to the database
+          await order.save();
+      
+          // Clear the user's cart
+          await Cart.findOneAndUpdate({ user: userId }, { items: [] });
+      
+          // Redirect to the ordered items page
+          res.redirect('/user/order');
+        } catch (err) {
+          console.error(err);
+          res.render('error', { message: 'Error placing order' });
+        }
+      };
+      
+
+
+
 
 exports.userLogout = (req, res) => {
     req.session.useId = null
@@ -205,27 +272,4 @@ exports.userLogout = (req, res) => {
     res.redirect('/')
 }
 
-// try {
-    //     console.log(req.session.useId.id + " id founded  for user to add");
-    //     const user = await UserData.findById(req.session.useId.id);
-    //     console.log(user + " user found");
-    //     const { itemId } = req.body;
-    //     console.log(itemId + "item found");
-         
-    //     // Add item to user's cart
-    //     const newuserCart = new Cart({
-    //         user : req.session.useId.id
-    //     })
-    //     newuserCart.save()
-    //   .then(() => {
-    //     console.log('New item added to the cart')
-    //   })
-    //   .catch((err) => {
-    //     console.error(err)
-    //     res.status(500).send('Error adding item to cart')
-    //   })
-    //     res.redirect('/user/menu');
-    // } catch (error) {
-    //     console.error(error);
-    //     res.status(500).json({ error: 'Server Error' });
-    // }
+

@@ -2,34 +2,44 @@ user cart
 {{>user-header}}
 
 
-{{!--  --}}
+{{!-- --}}
 <div class="container mt-5">
   <h2>Your Cart</h2>
 
   {{#if cart.items.length}}
-    <table class="table">
-      <thead>
-        <tr>
-    
-          <th>Product Name</th>
-          <th>Quantity</th>
-          <th>Price</th>
-          <th>orderer price</th>
-        </tr>
-      </thead>
-      <tbody>
-        {{#each cart.items}}
-          <tr>
-            <td>{{product.name}}</td>
-            <td>{{quantity}}</td>
-            <td>{{product.price}}</td>
-            <td>{{this.totalPrice}}</td>
-          </tr>
-        {{/each}}
-      </tbody>
-    </table>
+  <table class="table">
+    <thead>
+      <tr>
+
+        <th>Product Name</th>
+        <th>Quantity</th>
+        <th>Price</th>
+        <th>orderer price</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each cart.items}} 
+      <tr>
+        <td>{{product.name}}</td>
+        <td>{{quantity}}</td>
+        <td>{{product.price}}</td>
+        <td>{{this.totalPrice}}</td>
+      </tr>
+      {{/each}}
+    </tbody>
+  </table>{{grandTotal}}
+  <form action="/user/place-order" method="POST">
+    <button type="submit" class="btn btn-primary">Place Order</button>
+  </form>
+
+
+
   {{else}}
-    <p>Your cart is empty.</p>
+  <p>Your cart is empty.</p>
+  to be removed
+  <form action="/user/place-order" method="POST">
+    <button type="submit" class="btn btn-primary">Place Order</button>
+  </form>
   {{/if}}
-{{grandTotal}}
+
 </div>
