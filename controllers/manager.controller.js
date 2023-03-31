@@ -5,6 +5,7 @@ const { v4 } = require('uuid')
 const bcrypt = require('bcryptjs')
 const saltrounds = 10 
 const path = require('path');
+const Order = require('../models/UserOrder')
 
 const bodyParser = require('body-parser');
 
@@ -276,4 +277,27 @@ exports.getAddCategoryPage = (req, res) => {
     }
   };
   
+
+  exports.getOngoingOrder = async(req,res)=>{ 
+    try {
+      const orders = await Order.find({ orderStatus: 'pending' }).populate('items.product', 'name quantity -_id').lean();
+      if (!orders) {
+        // If no ongoing order found, display a message on the page
+        res.render('manager/OnGoingOrder', { message: 'No ongoing order found' });
+        return;
+      }
+      const items = orders.flatMap(order => order.items.map(item => item.product));
+      res.render('manager/OnGoingOrder', { items });
+    } catch (err) {
+      console.error(err);
+      res.status(500).send('Server error');
+    }
+  };
+    
+   
   
+      
+  
+  
+    
+    

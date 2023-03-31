@@ -202,7 +202,7 @@ exports.getUserCartPage = async (req, res) => {
 exports.getOrderPage = async(req, res) => {
     try {
         // Get the user ID from the authenticated session
-        const userId = req.session.useId.id;
+        const userId = req.session.useId.id; 
         
         // Find all orders for the user and populate the product information
         const orders = await Order.find({ user: userId }).populate('items.product').lean()
@@ -232,14 +232,23 @@ exports.getOrderPage = async(req, res) => {
           }
       
           // Create an order
-          const orderItems = cart.items.map(item => ({
+          const orderItems = cart.items.map(item => ({ 
             product: item.product._id,
             quantity: item.quantity,
             price: item.product.price,
             totalPrice : item.quantity * item.product.price
           }));
-      
-          const order = new Order({
+
+          // Check if there is an existing order for the user
+    const existingOrder = await Order.findOne({ user: userId, orderStatus: 'pending' });
+
+    if (existingOrder) {
+      // If an existing order exists, update it with the new order items
+      existingOrder.items = existingOrder.items.concat(orderItems);
+      existingOrder.totalAmount += cart.grandTotal;
+      await existingOrder.save();
+    }else{
+        const order = new Order({
             user: userId,
             items: orderItems,
             totalAmount: cart.grandTotal,
@@ -250,7 +259,13 @@ exports.getOrderPage = async(req, res) => {
       
           // Save the order to the database
           await order.save();
+
+
+    }
       
+          
+            
+        
           // Clear the user's cart
           await Cart.findOneAndUpdate({ user: userId }, { items: [] });
       

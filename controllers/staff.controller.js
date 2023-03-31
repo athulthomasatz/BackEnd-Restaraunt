@@ -9,7 +9,7 @@ exports.getStaffPage = (req, res) => {
 exports.getStaffLoginPage = (req, res) => {
     res.render('staff/login', {
         error: req.flash("error"),
-        success : req.falsh("success")
+        success : req.flash("success")
     });
 };
 

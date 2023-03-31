@@ -29,6 +29,8 @@ router.get('/category/:categoryName', verifyManagerAuth, managerController.getMa
 router.get('/update-category', verifyManagerAuth, managerController.getUpdateCat);
 router.get('/update-category/:categoryId',verifyManagerAuth,managerController.getUpdateCategory)
 router.post('/update-category/:categoryId', verifyManagerAuth, managerController.postupdateCategory);
+
+router.get('/Ongoing-Orders',verifyManagerAuth,managerController.getOngoingOrder);
  
 
 module.exports = router;  

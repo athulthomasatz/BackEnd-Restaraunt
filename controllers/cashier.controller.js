@@ -13,9 +13,9 @@ exports.getCashierLoginPage = (req,res) => {
 } 
 
 exports.postCashierLoginPage = async(req,res)=>{
-    const { cname , cpassword } = req.body
+    const { cemail , cpassword } = req.body
     try{
-        const cashier = await cashierdata.findOne({ CashierName : cname })
+        const cashier = await cashierdata.findOne({ CashierEmail : cemail })
         if(!cashier){
             req.flash("error","Invalid User or User not exist")
             return res.redirect('/cashier/login')

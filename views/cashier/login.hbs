@@ -1,12 +1,12 @@
 <div class="container mt-5">
     <form action="/cashier/login" method="post">
     {{#if error}}
-        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
             {{error}}
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
         {{/if}}
-        <input type="text" placeholder="username" name="cname">
+        <input type="text" placeholder="Email" name="cemail">
         <input type="password" placeholder="password" name="cpassword">
         <button type="submit" class="btn btn-primary">Login</button>
         <br><br>
